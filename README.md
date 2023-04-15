@@ -1,6 +1,6 @@
 # final_project
 
-Youtube trending data Interactive Visualization website.
+Cryptocurrency data Interactive Visualization website.
 
 The link to the repo is at https://github.com/J36A/final_project
 
