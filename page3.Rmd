@@ -1,0 +1,46 @@
+---
+title: "Historical prices of some representative cryptocurrency"
+output: 
+    html_document:
+        toc: TRUE
+        toc_float: TRUE
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(plotly)
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+source("datainit.R")
+```
+
+## Showcasing plots {.tabset}
+
+### Figure 1
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+plt_history_price <- ggplot(
+  database, 
+  aes(x = timestamp, y = price, colour = names)
+) +
+  geom_line() +
+  theme_minimal()
+ggplotly(plt_history_price)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+database_without_BTC <- database %>% filter(names != "Wrapped BTC")
+```
+
+### Figure 2
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+plt_history_price2 <- ggplot(
+  database_without_BTC, 
+  aes(x = timestamp, y = price, colour = names)
+) +
+  geom_line() +
+  theme_minimal()
+ggplotly(plt_history_price2)
+```
+

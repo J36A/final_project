@@ -1,0 +1,158 @@
+---
+title: "Cryptocurrency Data Interactive visualization"
+output: 
+  html_document:
+    toc: True
+    toc_float: True
+---
+
+```{r, echo=FALSE, warning = FALSE, message=FALSE}
+library(httr)
+library(xml2)
+library(stringr)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+```
+
+```{r, echo=FALSE, warning = FALSE}
+url <- "https://coinranking1.p.rapidapi.com/coins"
+
+coin_query_string <- list(
+  referenceCurrencyUuid = "yhjMzLPhuIDl",
+  timePeriod = "24h",
+  orderBy = "marketCap",
+  orderDirection = "desc",
+  limit = "50",
+  offset = "0"
+)
+
+query_coins <- VERB("GET", url, add_headers('X-RapidAPI-Key' = '9c9d129698mshb8275bce0446cbcp11a9c2jsn311a96af71b1', 'X-RapidAPI-Host' = 'coinranking1.p.rapidapi.com'), query = coin_query_string, content_type("application/octet-stream"))
+
+coins <- httr::content(query_coins)
+coins <- as.character(coins)
+```
+
+```{r,echo=FALSE, warning = FALSE}
+ids <- stringr::str_extract_all(coins, "uuid = \\\"[A-Za-z0-9_-]+\\\"")[[2]]
+ids <- stringr::str_remove_all(ids, "uuid = \\\"|\\\"")
+
+symbols <- stringr::str_extract_all(coins, "symbol = \\\"[A-Za-z0-9]+\\\"")[[2]]
+symbols <- stringr::str_remove_all(symbols, "symbol = \\\"|\\\"")
+
+names <- stringr::str_extract_all(coins, "name = \\\"[A-Za-z0-9 .()]+\\\"")[[2]]
+names <- stringr::str_remove_all(names, "name = \\\"|\\\"")
+
+colors <- stringr::str_extract_all(coins, "color = (\\\"[#A-Za-z0-9]+\\\")|NULL")[[2]]
+colors <- stringr::str_remove_all(colors, "color = \\\"|\\\"")
+
+tiers <- stringr::str_extract_all(coins, "tier = [0-9]")[[2]]
+tiers <- stringr::str_remove_all(tiers, "tier = ")
+
+prices <- stringr::str_extract_all(coins, "price = (\\\"[0-9.]+\\\")")[[2]]
+prices <- as.numeric(stringr::str_remove_all(prices, "price = \\\"|\\\""))
+
+volume24h <- stringr::str_extract_all(coins, "`24hVolume` = (\\\"[0-9.]+\\\")")[[2]]
+volume24h <- as.numeric(stringr::str_remove_all(volume24h, "`24hVolume` = \\\"|\\\""))
+
+changes <- stringr::str_extract_all(coins, "change = (\\\"-?[0-9.]+\\\")")[[2]]
+changes <- as.numeric(stringr::str_remove_all(changes, "change = \\\"|\\\""))
+
+marketCap <- stringr::str_extract_all(coins, "marketCap = (\\\"[0-9.]+\\\")")[[2]]
+marketCap <- as.numeric(stringr::str_remove_all(marketCap, "marketCap = \\\"|\\\""))
+```
+
+```{r build-db, echo=FALSE, warning = FALSE}
+database <- data.frame(
+  ids, symbols, names, colors, tiers, prices, volume24h, changes, marketCap
+)
+```
+
+```{r, echo=FALSE, warning = FALSE}
+max_amount <- c()
+current_amount <- c()
+circulatings <- c()
+number_of_markets <- c()
+number_of_exchanges <- c()
+
+for (id in database$ids) {
+  supply_url <- paste("https://coinranking1.p.rapidapi.com/coin/", id, sep = "")
+  supply <- VERB("GET",
+                 supply_url, 
+                 add_headers('X-RapidAPI-Key' = '9c9d129698mshb8275bce0446cbcp11a9c2jsn311a96af71b1',
+                             'X-RapidAPI-Host' = 'coinranking1.p.rapidapi.com'),
+                 content_type("application/octet-stream")
+                 )
+  supply <- httr::content(supply)
+  supply <- as.character(supply)
+  max_amount_id <- stringr::str_extract_all(supply, "max = \\\"[0-9.]+\\\"|max = NULL")[[2]]
+  max_amount_id <- as.numeric(stringr::str_remove_all(max_amount_id, "max = |\\\"|\\\""))
+  current_amount_id <- stringr::str_extract_all(supply, "total = \\\"[0-9.]+\\\"|total = NULL")[[2]]
+  current_amount_id <- as.numeric(stringr::str_remove_all(current_amount_id, "total = |\\\"|\\\""))
+  circulating <- stringr::str_extract_all(supply, "circulating = \\\"[0-9.]+\\\"|circulating = NULL")[[2]]
+  circulating <- as.numeric(stringr::str_remove_all(circulating, "circulating = |\\\"|\\\""))
+  market_number <- stringr::str_extract_all(supply, "numberOfMarkets = [0-9.]+|numberOfMarkets = NULL")[[2]]
+  market_number <- as.numeric(stringr::str_remove_all(market_number, "numberOfMarkets = "))
+  exchanges_number <- stringr::str_extract_all(supply, "numberOfExchanges = [0-9.]+|numberOfExchanges = NULL")[[2]]
+  exchanges_number <- as.numeric(stringr::str_remove_all(exchanges_number, "numberOfExchanges = "))
+  max_amount <- c(max_amount, max_amount_id)
+  current_amount <- c(current_amount, current_amount_id)
+  circulatings <- c(circulatings, circulating)
+  number_of_markets <- c(number_of_markets, market_number)
+  number_of_exchanges <- c(number_of_exchanges, exchanges_number)
+}
+```
+
+```{r,echo=FALSE, warning = FALSE}
+database$max <- max_amount
+database$current <- current_amount
+database$circulatings <- circulatings
+database$market_number <- number_of_markets
+database$exchange_number <- number_of_exchanges
+database$frequency_exchange <- ifelse(database$volume24h > median(database$volume24h), "high", "low")
+database <- database %>% mutate(`V/MC` = volume24h/marketCap)
+```
+
+```{r plt1, echo=FALSE, warning=FALSE}
+
+plot1_scatter <- database %>% 
+  plot_ly(x = ~market_number, y = ~exchange_number,
+          type = 'scatter', mode = 'markers', color = ~names,
+          size = ~volume24h, sizes = c(5, 70), marker = list(sizemode='diameter', opacity=0.5),
+          hoverinfo = 'text',
+          text = ~paste( paste(names, ":", sep=""), paste(" Market number: ", market_number, sep="") , paste(" Exchange number: ", exchange_number, sep=""), sep = "<br>")) %>%
+  layout(title = "Number of markets vs. the number of exchanges for coins",
+                  yaxis = list(title = "Nmber of exchange"), xaxis = list(title = "Number of market"),
+         hovermode = "compare")
+```
+
+
+```{r plt2, echo=FALSE, warning=FALSE}
+database_without_USD <- database %>% filter(names !="Tether USD")
+
+plot2_scatter <- database_without_USD %>% 
+  plot_ly(x = ~market_number, y = ~exchange_number,
+          type = 'scatter', mode = 'markers', color = ~symbols,
+          size = ~volume24h, sizes = c(5, 70), marker = list(sizemode='diameter', opacity=0.5),
+          hoverinfo = 'text',
+          text = ~paste( paste(names, ":", sep=""), paste(" market number: ", market_number, sep="") , paste(" exchange number: ",
+                        exchange_number, sep=""), sep = "<br>")) %>%
+  layout(title = "Number of markets vs. the number of exchanges for coins",
+                  yaxis = list(title = "Nmber of exchange"), xaxis = list(title = "Number of market"),
+         hovermode = "compare")
+```
+
+## Showcasing plots {.tabset}
+
+### Figure 1
+
+```{r, echo=FALSE, warning=FALSE}
+plot1_scatter
+```
+
+### Figure 2
+
+```{r, echo=FALSE, warning=FALSE}
+plot2_scatter
+```
+

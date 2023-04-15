@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Cryptocurrency Data Interactive visualization</title>
+
+<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.1/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">JSC370 A5</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="page2.html">Relationship between number of market and number of exchange</a>
+</li>
+<li>
+  <a href="page3.html">Historical prices of some representative cryptocurrency</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Cryptocurrency Data Interactive
+visualization</h1>
+
+</div>
+
+
+<div id="showcasing-plots" class="section level2 tabset">
+<h2 class="tabset">Showcasing plots</h2>
+<div id="figure-1" class="section level3">
+<h3>Figure 1</h3>
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-7c1ff219a1be141693b9" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-7c1ff219a1be141693b9">{"x":{"visdat":{"61a041721780":["function () ","plotlyVisDat"]},"cur_data":"61a041721780","attrs":{"61a041721780":{"x":{},"y":{},"mode":"markers","marker":{"sizemode":"diameter","opacity":0.5},"hoverinfo":"text","text":{},"color":{},"size":{},"alpha_stroke":1,"sizes":[5,70],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Number of markets vs. the number of exchanges for coins","yaxis":{"domain":[0,1],"automargin":true,"title":"Nmber of exchange"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Number of market"},"hovermode":"compare","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[160],"y":[78],"mode":"markers","marker":{"color":"rgba(102,194,165,1)","size":[5.09560067934972],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(102,194,165,1)"}},"hoverinfo":"text","text":"Aave:<br> Market number: 160<br> Exchange number: 78","type":"scatter","name":"Aave","textfont":{"color":"rgba(102,194,165,1)","size":5.09560067934972},"error_y":{"color":"rgba(102,194,165,1)","width":5.09560067934972},"error_x":{"color":"rgba(102,194,165,1)","width":5.09560067934972},"line":{"color":"rgba(102,194,165,1)","width":5.09560067934972},"xaxis":"x","yaxis":"y","frame":null},{"x":[134],"y":[60],"mode":"markers","marker":{"color":"rgba(136,188,155,1)","size":[5.09949746105333],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(136,188,155,1)"}},"hoverinfo":"text","text":"Algorand:<br> Market number: 134<br> Exchange number: 60","type":"scatter","name":"Algorand","textfont":{"color":"rgba(136,188,155,1)","size":5.09949746105333},"error_y":{"color":"rgba(136,188,155,1)","width":5.09949746105333},"error_x":{"color":"rgba(136,188,155,1)","width":5.09949746105333},"line":{"color":"rgba(136,188,155,1)","width":5.09949746105333},"xaxis":"x","yaxis":"y","frame":null},{"x":[76],"y":[46],"mode":"markers","marker":{"color":"rgba(162,182,146,1)","size":[5.45530589586603],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(162,182,146,1)"}},"hoverinfo":"text","text":"Aptos:<br> Market number: 76<br> Exchange number: 46","type":"scatter","name":"Aptos","textfont":{"color":"rgba(162,182,146,1)","size":5.45530589586603},"error_y":{"color":"rgba(162,182,146,1)","width":5.45530589586603},"error_x":{"color":"rgba(162,182,146,1)","width":5.45530589586603},"line":{"color":"rgba(162,182,146,1)","width":5.45530589586603},"xaxis":"x","yaxis":"y","frame":null},{"x":[68],"y":[49],"mode":"markers","marker":{"color":"rgba(184,175,136,1)","size":[7.50765869319907],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(184,175,136,1)"}},"hoverinfo":"text","text":"ARBITRUM:<br> Market number: 68<br> Exchange number: 49","type":"scatter","name":"ARBITRUM","textfont":{"color":"rgba(184,175,136,1)","size":7.50765869319907},"error_y":{"color":"rgba(184,175,136,1)","width":7.50765869319907},"error_x":{"color":"rgba(184,175,136,1)","width":7.50765869319907},"line":{"color":"rgba(184,175,136,1)","width":7.50765869319907},"xaxis":"x","yaxis":"y","frame":null},{"x":[156],"y":[74],"mode":"markers","marker":{"color":"rgba(203,168,126,1)","size":[5.25658762269844],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(203,168,126,1)"}},"hoverinfo":"text","text":"Avalanche:<br> Market number: 156<br> Exchange number: 74","type":"scatter","name":"Avalanche","textfont":{"color":"rgba(203,168,126,1)","size":5.25658762269844},"error_y":{"color":"rgba(203,168,126,1)","width":5.25658762269844},"error_x":{"color":"rgba(203,168,126,1)","width":5.25658762269844},"line":{"color":"rgba(203,168,126,1)","width":5.25658762269844},"xaxis":"x","yaxis":"y","frame":null},{"x":[1245],"y":[48],"mode":"markers","marker":{"color":"rgba(220,160,117,1)","size":[9.67541081589726],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(220,160,117,1)"}},"hoverinfo":"text","text":"Binance USD:<br> Market number: 1245<br> Exchange number: 48","type":"scatter","name":"Binance USD","textfont":{"color":"rgba(220,160,117,1)","size":9.67541081589726},"error_y":{"color":"rgba(220,160,117,1)","width":9.67541081589726},"error_x":{"color":"rgba(220,160,117,1)","width":9.67541081589726},"line":{"color":"rgba(220,160,117,1)","width":9.67541081589726},"xaxis":"x","yaxis":"y","frame":null},{"x":[4450],"y":[134],"mode":"markers","marker":{"color":"rgba(237,151,107,1)","size":[25.2898155744813],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(237,151,107,1)"}},"hoverinfo":"text","text":"Bitcoin:<br> Market number: 4450<br> Exchange number: 134","type":"scatter","name":"Bitcoin","textfont":{"color":"rgba(237,151,107,1)","size":25.2898155744813},"error_y":{"color":"rgba(237,151,107,1)","width":25.2898155744813},"error_x":{"color":"rgba(237,151,107,1)","width":25.2898155744813},"line":{"color":"rgba(237,151,107,1)","width":25.2898155744813},"xaxis":"x","yaxis":"y","frame":null},{"x":[237],"y":[89],"mode":"markers","marker":{"color":"rgba(252,141,98,1)","size":[5.1590511929438],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(252,141,98,1)"}},"hoverinfo":"text","text":"Bitcoin Cash:<br> Market number: 237<br> Exchange number: 89","type":"scatter","name":"Bitcoin Cash","textfont":{"color":"rgba(252,141,98,1)","size":5.1590511929438},"error_y":{"color":"rgba(252,141,98,1)","width":5.1590511929438},"error_x":{"color":"rgba(252,141,98,1)","width":5.1590511929438},"line":{"color":"rgba(252,141,98,1)","width":5.1590511929438},"xaxis":"x","yaxis":"y","frame":null},{"x":[668],"y":[74],"mode":"markers","marker":{"color":"rgba(240,144,113,1)","size":[5.71132237312157],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(240,144,113,1)"}},"hoverinfo":"text","text":"BNB:<br> Market number: 668<br> Exchange number: 74","type":"scatter","name":"BNB","textfont":{"color":"rgba(240,144,113,1)","size":5.71132237312157},"error_y":{"color":"rgba(240,144,113,1)","width":5.71132237312157},"error_x":{"color":"rgba(240,144,113,1)","width":5.71132237312157},"line":{"color":"rgba(240,144,113,1)","width":5.71132237312157},"xaxis":"x","yaxis":"y","frame":null},{"x":[264],"y":[86],"mode":"markers","marker":{"color":"rgba(228,147,129,1)","size":[5.67549913389067],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(228,147,129,1)"}},"hoverinfo":"text","text":"Cardano:<br> Market number: 264<br> Exchange number: 86","type":"scatter","name":"Cardano","textfont":{"color":"rgba(228,147,129,1)","size":5.67549913389067},"error_y":{"color":"rgba(228,147,129,1)","width":5.67549913389067},"error_x":{"color":"rgba(228,147,129,1)","width":5.67549913389067},"line":{"color":"rgba(228,147,129,1)","width":5.67549913389067},"xaxis":"x","yaxis":"y","frame":null},{"x":[250],"y":[101],"mode":"markers","marker":{"color":"rgba(214,150,144,1)","size":[5.38493794515778],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(214,150,144,1)"}},"hoverinfo":"text","text":"Chainlink:<br> Market number: 250<br> Exchange number: 101","type":"scatter","name":"Chainlink","textfont":{"color":"rgba(214,150,144,1)","size":5.38493794515778},"error_y":{"color":"rgba(214,150,144,1)","width":5.38493794515778},"error_x":{"color":"rgba(214,150,144,1)","width":5.38493794515778},"line":{"color":"rgba(214,150,144,1)","width":5.38493794515778},"xaxis":"x","yaxis":"y","frame":null},{"x":[184],"y":[66],"mode":"markers","marker":{"color":"rgba(200,153,158,1)","size":[5.19677282413794],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(200,153,158,1)"}},"hoverinfo":"text","text":"Cosmos:<br> Market number: 184<br> Exchange number: 66","type":"scatter","name":"Cosmos","textfont":{"color":"rgba(200,153,158,1)","size":5.19677282413794},"error_y":{"color":"rgba(200,153,158,1)","width":5.19677282413794},"error_x":{"color":"rgba(200,153,158,1)","width":5.19677282413794},"line":{"color":"rgba(200,153,158,1)","width":5.19677282413794},"xaxis":"x","yaxis":"y","frame":null},{"x":[183],"y":[51],"mode":"markers","marker":{"color":"rgba(183,155,173,1)","size":[5.05897867798643],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(183,155,173,1)"}},"hoverinfo":"text","text":"Dai:<br> Market number: 183<br> Exchange number: 51","type":"scatter","name":"Dai","textfont":{"color":"rgba(183,155,173,1)","size":5.05897867798643},"error_y":{"color":"rgba(183,155,173,1)","width":5.05897867798643},"error_x":{"color":"rgba(183,155,173,1)","width":5.05897867798643},"line":{"color":"rgba(183,155,173,1)","width":5.05897867798643},"xaxis":"x","yaxis":"y","frame":null},{"x":[158],"y":[77],"mode":"markers","marker":{"color":"rgba(164,158,188,1)","size":[5.14767922221392],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(164,158,188,1)"}},"hoverinfo":"text","text":"Decentraland:<br> Market number: 158<br> Exchange number: 77","type":"scatter","name":"Decentraland","textfont":{"color":"rgba(164,158,188,1)","size":5.14767922221392},"error_y":{"color":"rgba(164,158,188,1)","width":5.14767922221392},"error_x":{"color":"rgba(164,158,188,1)","width":5.14767922221392},"line":{"color":"rgba(164,158,188,1)","width":5.14767922221392},"xaxis":"x","yaxis":"y","frame":null},{"x":[262],"y":[94],"mode":"markers","marker":{"color":"rgba(141,160,203,1)","size":[5.88417095291311],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(141,160,203,1)"}},"hoverinfo":"text","text":"Dogecoin:<br> Market number: 262<br> Exchange number: 94","type":"scatter","name":"Dogecoin","textfont":{"color":"rgba(141,160,203,1)","size":5.88417095291311},"error_y":{"color":"rgba(141,160,203,1)","width":5.88417095291311},"error_x":{"color":"rgba(141,160,203,1)","width":5.88417095291311},"line":{"color":"rgba(141,160,203,1)","width":5.88417095291311},"xaxis":"x","yaxis":"y","frame":null},{"x":[2],"y":[1],"mode":"markers","marker":{"color":"rgba(156,158,202,1)","size":[5.00530920285995],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(156,158,202,1)"}},"hoverinfo":"text","text":"EnergySwap:<br> Market number: 2<br> Exchange number: 1","type":"scatter","name":"EnergySwap","textfont":{"color":"rgba(156,158,202,1)","size":5.00530920285995},"error_y":{"color":"rgba(156,158,202,1)","width":5.00530920285995},"error_x":{"color":"rgba(156,158,202,1)","width":5.00530920285995},"line":{"color":"rgba(156,158,202,1)","width":5.00530920285995},"xaxis":"x","yaxis":"y","frame":null},{"x":[201],"y":[73],"mode":"markers","marker":{"color":"rgba(170,155,201,1)","size":[5.27462653202907],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(170,155,201,1)"}},"hoverinfo":"text","text":"EOS:<br> Market number: 201<br> Exchange number: 73","type":"scatter","name":"EOS","textfont":{"color":"rgba(170,155,201,1)","size":5.27462653202907},"error_y":{"color":"rgba(170,155,201,1)","width":5.27462653202907},"error_x":{"color":"rgba(170,155,201,1)","width":5.27462653202907},"line":{"color":"rgba(170,155,201,1)","width":5.27462653202907},"xaxis":"x","yaxis":"y","frame":null},{"x":[2854],"y":[133],"mode":"markers","marker":{"color":"rgba(183,152,200,1)","size":[21.2629926546417],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(183,152,200,1)"}},"hoverinfo":"text","text":"Ethereum:<br> Market number: 2854<br> Exchange number: 133","type":"scatter","name":"Ethereum","textfont":{"color":"rgba(183,152,200,1)","size":21.2629926546417},"error_y":{"color":"rgba(183,152,200,1)","width":21.2629926546417},"error_x":{"color":"rgba(183,152,200,1)","width":21.2629926546417},"line":{"color":"rgba(183,152,200,1)","width":21.2629926546417},"xaxis":"x","yaxis":"y","frame":null},{"x":[166],"y":[73],"mode":"markers","marker":{"color":"rgba(196,149,198,1)","size":[5.49347667049259],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(196,149,198,1)"}},"hoverinfo":"text","text":"Ethereum Classic:<br> Market number: 166<br> Exchange number: 73","type":"scatter","name":"Ethereum Classic","textfont":{"color":"rgba(196,149,198,1)","size":5.49347667049259},"error_y":{"color":"rgba(196,149,198,1)","width":5.49347667049259},"error_x":{"color":"rgba(196,149,198,1)","width":5.49347667049259},"line":{"color":"rgba(196,149,198,1)","width":5.49347667049259},"xaxis":"x","yaxis":"y","frame":null},{"x":[110],"y":[56],"mode":"markers","marker":{"color":"rgba(208,146,197,1)","size":[5.34414113269945],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(208,146,197,1)"}},"hoverinfo":"text","text":"Filecoin:<br> Market number: 110<br> Exchange number: 56","type":"scatter","name":"Filecoin","textfont":{"color":"rgba(208,146,197,1)","size":5.34414113269945},"error_y":{"color":"rgba(208,146,197,1)","width":5.34414113269945},"error_x":{"color":"rgba(208,146,197,1)","width":5.34414113269945},"line":{"color":"rgba(208,146,197,1)","width":5.34414113269945},"xaxis":"x","yaxis":"y","frame":null},{"x":[12],"y":[8],"mode":"markers","marker":{"color":"rgba(220,142,196,1)","size":[5],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(220,142,196,1)"}},"hoverinfo":"text","text":"Frax:<br> Market number: 12<br> Exchange number: 8","type":"scatter","name":"Frax","textfont":{"color":"rgba(220,142,196,1)","size":5},"error_y":{"color":"rgba(220,142,196,1)","width":5},"error_x":{"color":"rgba(220,142,196,1)","width":5},"line":{"color":"rgba(220,142,196,1)","width":5},"xaxis":"x","yaxis":"y","frame":null},{"x":[52],"y":[38],"mode":"markers","marker":{"color":"rgba(231,138,195,1)","size":[5.04167033821443],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(231,138,195,1)"}},"hoverinfo":"text","text":"Frax Share:<br> Market number: 52<br> Exchange number: 38","type":"scatter","name":"Frax Share","textfont":{"color":"rgba(231,138,195,1)","size":5.04167033821443},"error_y":{"color":"rgba(231,138,195,1)","width":5.04167033821443},"error_x":{"color":"rgba(231,138,195,1)","width":5.04167033821443},"line":{"color":"rgba(231,138,195,1)","width":5.04167033821443},"xaxis":"x","yaxis":"y","frame":null},{"x":[71],"y":[40],"mode":"markers","marker":{"color":"rgba(225,151,181,1)","size":[5.0561970197372],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(225,151,181,1)"}},"hoverinfo":"text","text":"Hedera:<br> Market number: 71<br> Exchange number: 40","type":"scatter","name":"Hedera","textfont":{"color":"rgba(225,151,181,1)","size":5.0561970197372},"error_y":{"color":"rgba(225,151,181,1)","width":5.0561970197372},"error_x":{"color":"rgba(225,151,181,1)","width":5.0561970197372},"line":{"color":"rgba(225,151,181,1)","width":5.0561970197372},"xaxis":"x","yaxis":"y","frame":null},{"x":[41],"y":[23],"mode":"markers","marker":{"color":"rgba(218,163,166,1)","size":[5.01292464439561],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(218,163,166,1)"}},"hoverinfo":"text","text":"Huobi Token:<br> Market number: 41<br> Exchange number: 23","type":"scatter","name":"Huobi Token","textfont":{"color":"rgba(218,163,166,1)","size":5.01292464439561},"error_y":{"color":"rgba(218,163,166,1)","width":5.01292464439561},"error_x":{"color":"rgba(218,163,166,1)","width":5.01292464439561},"line":{"color":"rgba(218,163,166,1)","width":5.01292464439561},"xaxis":"x","yaxis":"y","frame":null},{"x":[78],"y":[57],"mode":"markers","marker":{"color":"rgba(210,175,152,1)","size":[5.07144103523799],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(210,175,152,1)"}},"hoverinfo":"text","text":"Immutable X:<br> Market number: 78<br> Exchange number: 57","type":"scatter","name":"Immutable X","textfont":{"color":"rgba(210,175,152,1)","size":5.07144103523799},"error_y":{"color":"rgba(210,175,152,1)","width":5.07144103523799},"error_x":{"color":"rgba(210,175,152,1)","width":5.07144103523799},"line":{"color":"rgba(210,175,152,1)","width":5.07144103523799},"xaxis":"x","yaxis":"y","frame":null},{"x":[86],"y":[40],"mode":"markers","marker":{"color":"rgba(201,186,136,1)","size":[5.04421682234144],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(201,186,136,1)"}},"hoverinfo":"text","text":"Internet Computer (DFINITY):<br> Market number: 86<br> Exchange number: 40","type":"scatter","name":"Internet Computer (DFINITY)","textfont":{"color":"rgba(201,186,136,1)","size":5.04421682234144},"error_y":{"color":"rgba(201,186,136,1)","width":5.04421682234144},"error_x":{"color":"rgba(201,186,136,1)","width":5.04421682234144},"line":{"color":"rgba(201,186,136,1)","width":5.04421682234144},"xaxis":"x","yaxis":"y","frame":null},{"x":[91],"y":[56],"mode":"markers","marker":{"color":"rgba(191,196,120,1)","size":[5.13170235090618],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(191,196,120,1)"}},"hoverinfo":"text","text":"Lido DAO Token:<br> Market number: 91<br> Exchange number: 56","type":"scatter","name":"Lido DAO Token","textfont":{"color":"rgba(191,196,120,1)","size":5.13170235090618},"error_y":{"color":"rgba(191,196,120,1)","width":5.13170235090618},"error_x":{"color":"rgba(191,196,120,1)","width":5.13170235090618},"line":{"color":"rgba(191,196,120,1)","width":5.13170235090618},"xaxis":"x","yaxis":"y","frame":null},{"x":[364],"y":[109],"mode":"markers","marker":{"color":"rgba(179,206,103,1)","size":[5.78312252099373],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(179,206,103,1)"}},"hoverinfo":"text","text":"Litecoin:<br> Market number: 364<br> Exchange number: 109","type":"scatter","name":"Litecoin","textfont":{"color":"rgba(179,206,103,1)","size":5.78312252099373},"error_y":{"color":"rgba(179,206,103,1)","width":5.78312252099373},"error_x":{"color":"rgba(179,206,103,1)","width":5.78312252099373},"line":{"color":"rgba(179,206,103,1)","width":5.78312252099373},"xaxis":"x","yaxis":"y","frame":null},{"x":[81],"y":[39],"mode":"markers","marker":{"color":"rgba(166,216,84,1)","size":[5.08235076878765],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(166,216,84,1)"}},"hoverinfo":"text","text":"Monero:<br> Market number: 81<br> Exchange number: 39","type":"scatter","name":"Monero","textfont":{"color":"rgba(166,216,84,1)","size":5.08235076878765},"error_y":{"color":"rgba(166,216,84,1)","width":5.08235076878765},"error_x":{"color":"rgba(166,216,84,1)","width":5.08235076878765},"line":{"color":"rgba(166,216,84,1)","width":5.08235076878765},"xaxis":"x","yaxis":"y","frame":null},{"x":[110],"y":[53],"mode":"markers","marker":{"color":"rgba(180,216,80,1)","size":[5.13430073536796],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(180,216,80,1)"}},"hoverinfo":"text","text":"NEAR Protocol:<br> Market number: 110<br> Exchange number: 53","type":"scatter","name":"NEAR Protocol","textfont":{"color":"rgba(180,216,80,1)","size":5.13430073536796},"error_y":{"color":"rgba(180,216,80,1)","width":5.13430073536796},"error_x":{"color":"rgba(180,216,80,1)","width":5.13430073536796},"line":{"color":"rgba(180,216,80,1)","width":5.13430073536796},"xaxis":"x","yaxis":"y","frame":null},{"x":[23],"y":[15],"mode":"markers","marker":{"color":"rgba(194,217,75,1)","size":[5.06925035082066],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(194,217,75,1)"}},"hoverinfo":"text","text":"OKB:<br> Market number: 23<br> Exchange number: 15","type":"scatter","name":"OKB","textfont":{"color":"rgba(194,217,75,1)","size":5.06925035082066},"error_y":{"color":"rgba(194,217,75,1)","width":5.06925035082066},"error_x":{"color":"rgba(194,217,75,1)","width":5.06925035082066},"line":{"color":"rgba(194,217,75,1)","width":5.06925035082066},"xaxis":"x","yaxis":"y","frame":null},{"x":[70],"y":[45],"mode":"markers","marker":{"color":"rgba(206,217,70,1)","size":[5.05749246830699],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(206,217,70,1)"}},"hoverinfo":"text","text":"PancakeSwap:<br> Market number: 70<br> Exchange number: 45","type":"scatter","name":"PancakeSwap","textfont":{"color":"rgba(206,217,70,1)","size":5.05749246830699},"error_y":{"color":"rgba(206,217,70,1)","width":5.05749246830699},"error_x":{"color":"rgba(206,217,70,1)","width":5.05749246830699},"line":{"color":"rgba(206,217,70,1)","width":5.05749246830699},"xaxis":"x","yaxis":"y","frame":null},{"x":[198],"y":[81],"mode":"markers","marker":{"color":"rgba(219,217,65,1)","size":[5.26586554792912],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(219,217,65,1)"}},"hoverinfo":"text","text":"Polkadot:<br> Market number: 198<br> Exchange number: 81","type":"scatter","name":"Polkadot","textfont":{"color":"rgba(219,217,65,1)","size":5.26586554792912},"error_y":{"color":"rgba(219,217,65,1)","width":5.26586554792912},"error_x":{"color":"rgba(219,217,65,1)","width":5.26586554792912},"line":{"color":"rgba(219,217,65,1)","width":5.26586554792912},"xaxis":"x","yaxis":"y","frame":null},{"x":[215],"y":[91],"mode":"markers","marker":{"color":"rgba(231,217,60,1)","size":[5.51101271398786],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(231,217,60,1)"}},"hoverinfo":"text","text":"Polygon:<br> Market number: 215<br> Exchange number: 91","type":"scatter","name":"Polygon","textfont":{"color":"rgba(231,217,60,1)","size":5.51101271398786},"error_y":{"color":"rgba(231,217,60,1)","width":5.51101271398786},"error_x":{"color":"rgba(231,217,60,1)","width":5.51101271398786},"line":{"color":"rgba(231,217,60,1)","width":5.51101271398786},"xaxis":"x","yaxis":"y","frame":null},{"x":[152],"y":[78],"mode":"markers","marker":{"color":"rgba(243,217,54,1)","size":[5.25797261612791],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(243,217,54,1)"}},"hoverinfo":"text","text":"Shiba Inu:<br> Market number: 152<br> Exchange number: 78","type":"scatter","name":"Shiba Inu","textfont":{"color":"rgba(243,217,54,1)","size":5.25797261612791},"error_y":{"color":"rgba(243,217,54,1)","width":5.25797261612791},"error_x":{"color":"rgba(243,217,54,1)","width":5.25797261612791},"line":{"color":"rgba(243,217,54,1)","width":5.25797261612791},"xaxis":"x","yaxis":"y","frame":null},{"x":[223],"y":[86],"mode":"markers","marker":{"color":"rgba(255,217,47,1)","size":[5.68806426030036],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(255,217,47,1)"}},"hoverinfo":"text","text":"Solana:<br> Market number: 223<br> Exchange number: 86","type":"scatter","name":"Solana","textfont":{"color":"rgba(255,217,47,1)","size":5.68806426030036},"error_y":{"color":"rgba(255,217,47,1)","width":5.68806426030036},"error_x":{"color":"rgba(255,217,47,1)","width":5.68806426030036},"line":{"color":"rgba(255,217,47,1)","width":5.68806426030036},"xaxis":"x","yaxis":"y","frame":null},{"x":[196],"y":[84],"mode":"markers","marker":{"color":"rgba(252,214,68,1)","size":[5.10320015905238],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(252,214,68,1)"}},"hoverinfo":"text","text":"Stellar:<br> Market number: 196<br> Exchange number: 84","type":"scatter","name":"Stellar","textfont":{"color":"rgba(252,214,68,1)","size":5.10320015905238},"error_y":{"color":"rgba(252,214,68,1)","width":5.10320015905238},"error_x":{"color":"rgba(252,214,68,1)","width":5.10320015905238},"line":{"color":"rgba(252,214,68,1)","width":5.10320015905238},"xaxis":"x","yaxis":"y","frame":null},{"x":[18872],"y":[126],"mode":"markers","marker":{"color":"rgba(249,211,84,1)","size":[70],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(249,211,84,1)"}},"hoverinfo":"text","text":"Tether USD:<br> Market number: 18872<br> Exchange number: 126","type":"scatter","name":"Tether USD","textfont":{"color":"rgba(249,211,84,1)","size":70},"error_y":{"color":"rgba(249,211,84,1)","width":70},"error_x":{"color":"rgba(249,211,84,1)","width":70},"line":{"color":"rgba(249,211,84,1)","width":70},"xaxis":"x","yaxis":"y","frame":null},{"x":[42],"y":[23],"mode":"markers","marker":{"color":"rgba(245,208,98,1)","size":[5.12334155615831],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(245,208,98,1)"}},"hoverinfo":"text","text":"The Sandbox:<br> Market number: 42<br> Exchange number: 23","type":"scatter","name":"The Sandbox","textfont":{"color":"rgba(245,208,98,1)","size":5.12334155615831},"error_y":{"color":"rgba(245,208,98,1)","width":5.12334155615831},"error_x":{"color":"rgba(245,208,98,1)","width":5.12334155615831},"line":{"color":"rgba(245,208,98,1)","width":5.12334155615831},"xaxis":"x","yaxis":"y","frame":null},{"x":[30],"y":[23],"mode":"markers","marker":{"color":"rgba(242,205,112,1)","size":[5.02288871569606],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(242,205,112,1)"}},"hoverinfo":"text","text":"Toncoin:<br> Market number: 30<br> Exchange number: 23","type":"scatter","name":"Toncoin","textfont":{"color":"rgba(242,205,112,1)","size":5.02288871569606},"error_y":{"color":"rgba(242,205,112,1)","width":5.02288871569606},"error_x":{"color":"rgba(242,205,112,1)","width":5.02288871569606},"line":{"color":"rgba(242,205,112,1)","width":5.02288871569606},"xaxis":"x","yaxis":"y","frame":null},{"x":[258],"y":[81],"mode":"markers","marker":{"color":"rgba(238,202,124,1)","size":[5.25475457134111],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(238,202,124,1)"}},"hoverinfo":"text","text":"TRON:<br> Market number: 258<br> Exchange number: 81","type":"scatter","name":"TRON","textfont":{"color":"rgba(238,202,124,1)","size":5.25475457134111},"error_y":{"color":"rgba(238,202,124,1)","width":5.25475457134111},"error_x":{"color":"rgba(238,202,124,1)","width":5.25475457134111},"line":{"color":"rgba(238,202,124,1)","width":5.25475457134111},"xaxis":"x","yaxis":"y","frame":null},{"x":[46],"y":[30],"mode":"markers","marker":{"color":"rgba(234,199,136,1)","size":[5.02419352603765],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(234,199,136,1)"}},"hoverinfo":"text","text":"Trust Wallet Token:<br> Market number: 46<br> Exchange number: 30","type":"scatter","name":"Trust Wallet Token","textfont":{"color":"rgba(234,199,136,1)","size":5.02419352603765},"error_y":{"color":"rgba(234,199,136,1)","width":5.02419352603765},"error_x":{"color":"rgba(234,199,136,1)","width":5.02419352603765},"line":{"color":"rgba(234,199,136,1)","width":5.02419352603765},"xaxis":"x","yaxis":"y","frame":null},{"x":[178],"y":[89],"mode":"markers","marker":{"color":"rgba(229,196,148,1)","size":[5.11966701761452],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(229,196,148,1)"}},"hoverinfo":"text","text":"Uniswap:<br> Market number: 178<br> Exchange number: 89","type":"scatter","name":"Uniswap","textfont":{"color":"rgba(229,196,148,1)","size":5.11966701761452},"error_y":{"color":"rgba(229,196,148,1)","width":5.11966701761452},"error_x":{"color":"rgba(229,196,148,1)","width":5.11966701761452},"line":{"color":"rgba(229,196,148,1)","width":5.11966701761452},"xaxis":"x","yaxis":"y","frame":null},{"x":[1448],"y":[99],"mode":"markers","marker":{"color":"rgba(222,194,153,1)","size":[8.16593800308362],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(222,194,153,1)"}},"hoverinfo":"text","text":"USDC:<br> Market number: 1448<br> Exchange number: 99","type":"scatter","name":"USDC","textfont":{"color":"rgba(222,194,153,1)","size":8.16593800308362},"error_y":{"color":"rgba(222,194,153,1)","width":8.16593800308362},"error_x":{"color":"rgba(222,194,153,1)","width":8.16593800308362},"line":{"color":"rgba(222,194,153,1)","width":8.16593800308362},"xaxis":"x","yaxis":"y","frame":null},{"x":[112],"y":[41],"mode":"markers","marker":{"color":"rgba(216,191,157,1)","size":[5.06518358893272],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(216,191,157,1)"}},"hoverinfo":"text","text":"VeChain:<br> Market number: 112<br> Exchange number: 41","type":"scatter","name":"VeChain","textfont":{"color":"rgba(216,191,157,1)","size":5.06518358893272},"error_y":{"color":"rgba(216,191,157,1)","width":5.06518358893272},"error_x":{"color":"rgba(216,191,157,1)","width":5.06518358893272},"line":{"color":"rgba(216,191,157,1)","width":5.06518358893272},"xaxis":"x","yaxis":"y","frame":null},{"x":[17],"y":[15],"mode":"markers","marker":{"color":"rgba(209,189,162,1)","size":[5.00602569067628],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(209,189,162,1)"}},"hoverinfo":"text","text":"WEMIX TOKEN:<br> Market number: 17<br> Exchange number: 15","type":"scatter","name":"WEMIX TOKEN","textfont":{"color":"rgba(209,189,162,1)","size":5.00602569067628},"error_y":{"color":"rgba(209,189,162,1)","width":5.00602569067628},"error_x":{"color":"rgba(209,189,162,1)","width":5.00602569067628},"line":{"color":"rgba(209,189,162,1)","width":5.00602569067628},"xaxis":"x","yaxis":"y","frame":null},{"x":[124],"y":[44],"mode":"markers","marker":{"color":"rgba(202,186,166,1)","size":[5.07616327346073],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(202,186,166,1)"}},"hoverinfo":"text","text":"Wrapped BTC:<br> Market number: 124<br> Exchange number: 44","type":"scatter","name":"Wrapped BTC","textfont":{"color":"rgba(202,186,166,1)","size":5.07616327346073},"error_y":{"color":"rgba(202,186,166,1)","width":5.07616327346073},"error_x":{"color":"rgba(202,186,166,1)","width":5.07616327346073},"line":{"color":"rgba(202,186,166,1)","width":5.07616327346073},"xaxis":"x","yaxis":"y","frame":null},{"x":[1373],"y":[11],"mode":"markers","marker":{"color":"rgba(194,184,170,1)","size":[5.2085325053496],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(194,184,170,1)"}},"hoverinfo":"text","text":"Wrapped Ether:<br> Market number: 1373<br> Exchange number: 11","type":"scatter","name":"Wrapped Ether","textfont":{"color":"rgba(194,184,170,1)","size":5.2085325053496},"error_y":{"color":"rgba(194,184,170,1)","width":5.2085325053496},"error_x":{"color":"rgba(194,184,170,1)","width":5.2085325053496},"line":{"color":"rgba(194,184,170,1)","width":5.2085325053496},"xaxis":"x","yaxis":"y","frame":null},{"x":[17],"y":[3],"mode":"markers","marker":{"color":"rgba(187,181,175,1)","size":[5.01825327271042],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(187,181,175,1)"}},"hoverinfo":"text","text":"Wrapped liquid staked Ether 2.0:<br> Market number: 17<br> Exchange number: 3","type":"scatter","name":"Wrapped liquid staked Ether 2.0","textfont":{"color":"rgba(187,181,175,1)","size":5.01825327271042},"error_y":{"color":"rgba(187,181,175,1)","width":5.01825327271042},"error_x":{"color":"rgba(187,181,175,1)","width":5.01825327271042},"line":{"color":"rgba(187,181,175,1)","width":5.01825327271042},"xaxis":"x","yaxis":"y","frame":null},{"x":[396],"y":[100],"mode":"markers","marker":{"color":"rgba(179,179,179,1)","size":[6.35711262814435],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(179,179,179,1)"}},"hoverinfo":"text","text":"XRP:<br> Market number: 396<br> Exchange number: 100","type":"scatter","name":"XRP","textfont":{"color":"rgba(179,179,179,1)","size":6.35711262814435},"error_y":{"color":"rgba(179,179,179,1)","width":6.35711262814435},"error_x":{"color":"rgba(179,179,179,1)","width":6.35711262814435},"line":{"color":"rgba(179,179,179,1)","width":6.35711262814435},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="figure-2" class="section level3">
+<h3>Figure 2</h3>
+<div class="plotly html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-75b6cac1d979469c4616" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-75b6cac1d979469c4616">{"x":{"visdat":{"61a01c4e3195":["function () ","plotlyVisDat"]},"cur_data":"61a01c4e3195","attrs":{"61a01c4e3195":{"x":{},"y":{},"mode":"markers","marker":{"sizemode":"diameter","opacity":0.5},"hoverinfo":"text","text":{},"color":{},"size":{},"alpha_stroke":1,"sizes":[5,70],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Number of markets vs. the number of exchanges for coins","yaxis":{"domain":[0,1],"automargin":true,"title":"Nmber of exchange"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Number of market"},"hovermode":"compare","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[160],"y":[78],"mode":"markers","marker":{"color":"rgba(102,194,165,1)","size":[5.3062642011171],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(102,194,165,1)"}},"hoverinfo":"text","text":"Aave:<br> market number: 160<br> exchange number: 78","type":"scatter","name":"AAVE","textfont":{"color":"rgba(102,194,165,1)","size":5.3062642011171},"error_y":{"color":"rgba(102,194,165,1)","width":5.3062642011171},"error_x":{"color":"rgba(102,194,165,1)","width":5.3062642011171},"line":{"color":"rgba(102,194,165,1)","width":5.3062642011171},"xaxis":"x","yaxis":"y","frame":null},{"x":[264],"y":[86],"mode":"markers","marker":{"color":"rgba(136,188,155,1)","size":[7.16401393801313],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(136,188,155,1)"}},"hoverinfo":"text","text":"Cardano:<br> market number: 264<br> exchange number: 86","type":"scatter","name":"ADA","textfont":{"color":"rgba(136,188,155,1)","size":7.16401393801313},"error_y":{"color":"rgba(136,188,155,1)","width":7.16401393801313},"error_x":{"color":"rgba(136,188,155,1)","width":7.16401393801313},"line":{"color":"rgba(136,188,155,1)","width":7.16401393801313},"xaxis":"x","yaxis":"y","frame":null},{"x":[134],"y":[60],"mode":"markers","marker":{"color":"rgba(163,182,145,1)","size":[5.31874784394789],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(163,182,145,1)"}},"hoverinfo":"text","text":"Algorand:<br> market number: 134<br> exchange number: 60","type":"scatter","name":"ALGO","textfont":{"color":"rgba(163,182,145,1)","size":5.31874784394789},"error_y":{"color":"rgba(163,182,145,1)","width":5.31874784394789},"error_x":{"color":"rgba(163,182,145,1)","width":5.31874784394789},"line":{"color":"rgba(163,182,145,1)","width":5.31874784394789},"xaxis":"x","yaxis":"y","frame":null},{"x":[76],"y":[46],"mode":"markers","marker":{"color":"rgba(185,175,135,1)","size":[6.45860779870831],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(185,175,135,1)"}},"hoverinfo":"text","text":"Aptos:<br> market number: 76<br> exchange number: 46","type":"scatter","name":"APT","textfont":{"color":"rgba(185,175,135,1)","size":6.45860779870831},"error_y":{"color":"rgba(185,175,135,1)","width":6.45860779870831},"error_x":{"color":"rgba(185,175,135,1)","width":6.45860779870831},"line":{"color":"rgba(185,175,135,1)","width":6.45860779870831},"xaxis":"x","yaxis":"y","frame":null},{"x":[68],"y":[49],"mode":"markers","marker":{"color":"rgba(204,167,126,1)","size":[13.0334793808054],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(204,167,126,1)"}},"hoverinfo":"text","text":"ARBITRUM:<br> market number: 68<br> exchange number: 49","type":"scatter","name":"ARB","textfont":{"color":"rgba(204,167,126,1)","size":13.0334793808054},"error_y":{"color":"rgba(204,167,126,1)","width":13.0334793808054},"error_x":{"color":"rgba(204,167,126,1)","width":13.0334793808054},"line":{"color":"rgba(204,167,126,1)","width":13.0334793808054},"xaxis":"x","yaxis":"y","frame":null},{"x":[184],"y":[66],"mode":"markers","marker":{"color":"rgba(222,159,116,1)","size":[5.63037702447392],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(222,159,116,1)"}},"hoverinfo":"text","text":"Cosmos:<br> market number: 184<br> exchange number: 66","type":"scatter","name":"ATOM","textfont":{"color":"rgba(222,159,116,1)","size":5.63037702447392},"error_y":{"color":"rgba(222,159,116,1)","width":5.63037702447392},"error_x":{"color":"rgba(222,159,116,1)","width":5.63037702447392},"line":{"color":"rgba(222,159,116,1)","width":5.63037702447392},"xaxis":"x","yaxis":"y","frame":null},{"x":[156],"y":[74],"mode":"markers","marker":{"color":"rgba(239,150,106,1)","size":[5.82199837717473],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(239,150,106,1)"}},"hoverinfo":"text","text":"Avalanche:<br> market number: 156<br> exchange number: 74","type":"scatter","name":"AVAX","textfont":{"color":"rgba(239,150,106,1)","size":5.82199837717473},"error_y":{"color":"rgba(239,150,106,1)","width":5.82199837717473},"error_x":{"color":"rgba(239,150,106,1)","width":5.82199837717473},"line":{"color":"rgba(239,150,106,1)","width":5.82199837717473},"xaxis":"x","yaxis":"y","frame":null},{"x":[237],"y":[89],"mode":"markers","marker":{"color":"rgba(250,141,100,1)","size":[5.50953284929557],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(250,141,100,1)"}},"hoverinfo":"text","text":"Bitcoin Cash:<br> market number: 237<br> exchange number: 89","type":"scatter","name":"BCH","textfont":{"color":"rgba(250,141,100,1)","size":5.50953284929557},"error_y":{"color":"rgba(250,141,100,1)","width":5.50953284929557},"error_x":{"color":"rgba(250,141,100,1)","width":5.50953284929557},"line":{"color":"rgba(250,141,100,1)","width":5.50953284929557},"xaxis":"x","yaxis":"y","frame":null},{"x":[668],"y":[74],"mode":"markers","marker":{"color":"rgba(238,145,116,1)","size":[7.27877646709875],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(238,145,116,1)"}},"hoverinfo":"text","text":"BNB:<br> market number: 668<br> exchange number: 74","type":"scatter","name":"BNB","textfont":{"color":"rgba(238,145,116,1)","size":7.27877646709875},"error_y":{"color":"rgba(238,145,116,1)","width":7.27877646709875},"error_x":{"color":"rgba(238,145,116,1)","width":7.27877646709875},"line":{"color":"rgba(238,145,116,1)","width":7.27877646709875},"xaxis":"x","yaxis":"y","frame":null},{"x":[4450],"y":[134],"mode":"markers","marker":{"color":"rgba(225,148,131,1)","size":[70],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(225,148,131,1)"}},"hoverinfo":"text","text":"Bitcoin:<br> market number: 4450<br> exchange number: 134","type":"scatter","name":"BTC","textfont":{"color":"rgba(225,148,131,1)","size":70},"error_y":{"color":"rgba(225,148,131,1)","width":70},"error_x":{"color":"rgba(225,148,131,1)","width":70},"line":{"color":"rgba(225,148,131,1)","width":70},"xaxis":"x","yaxis":"y","frame":null},{"x":[1245],"y":[48],"mode":"markers","marker":{"color":"rgba(211,151,147,1)","size":[19.9780416641904],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(211,151,147,1)"}},"hoverinfo":"text","text":"Binance USD:<br> market number: 1245<br> exchange number: 48","type":"scatter","name":"BUSD","textfont":{"color":"rgba(211,151,147,1)","size":19.9780416641904},"error_y":{"color":"rgba(211,151,147,1)","width":19.9780416641904},"error_x":{"color":"rgba(211,151,147,1)","width":19.9780416641904},"line":{"color":"rgba(211,151,147,1)","width":19.9780416641904},"xaxis":"x","yaxis":"y","frame":null},{"x":[70],"y":[45],"mode":"markers","marker":{"color":"rgba(196,153,162,1)","size":[5.1841815873701],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(196,153,162,1)"}},"hoverinfo":"text","text":"PancakeSwap:<br> market number: 70<br> exchange number: 45","type":"scatter","name":"CAKE","textfont":{"color":"rgba(196,153,162,1)","size":5.1841815873701},"error_y":{"color":"rgba(196,153,162,1)","width":5.1841815873701},"error_x":{"color":"rgba(196,153,162,1)","width":5.1841815873701},"line":{"color":"rgba(196,153,162,1)","width":5.1841815873701},"xaxis":"x","yaxis":"y","frame":null},{"x":[183],"y":[51],"mode":"markers","marker":{"color":"rgba(178,156,177,1)","size":[5.18894277550454],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(178,156,177,1)"}},"hoverinfo":"text","text":"Dai:<br> market number: 183<br> exchange number: 51","type":"scatter","name":"DAI","textfont":{"color":"rgba(178,156,177,1)","size":5.18894277550454},"error_y":{"color":"rgba(178,156,177,1)","width":5.18894277550454},"error_x":{"color":"rgba(178,156,177,1)","width":5.18894277550454},"line":{"color":"rgba(178,156,177,1)","width":5.18894277550454},"xaxis":"x","yaxis":"y","frame":null},{"x":[262],"y":[94],"mode":"markers","marker":{"color":"rgba(158,158,192,1)","size":[7.83251031673419],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(158,158,192,1)"}},"hoverinfo":"text","text":"Dogecoin:<br> market number: 262<br> exchange number: 94","type":"scatter","name":"DOGE","textfont":{"color":"rgba(158,158,192,1)","size":7.83251031673419},"error_y":{"color":"rgba(158,158,192,1)","width":7.83251031673419},"error_x":{"color":"rgba(158,158,192,1)","width":7.83251031673419},"line":{"color":"rgba(158,158,192,1)","width":7.83251031673419},"xaxis":"x","yaxis":"y","frame":null},{"x":[198],"y":[81],"mode":"markers","marker":{"color":"rgba(146,159,203,1)","size":[5.85172093122065],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(146,159,203,1)"}},"hoverinfo":"text","text":"Polkadot:<br> market number: 198<br> exchange number: 81","type":"scatter","name":"DOT","textfont":{"color":"rgba(146,159,203,1)","size":5.85172093122065},"error_y":{"color":"rgba(146,159,203,1)","width":5.85172093122065},"error_x":{"color":"rgba(146,159,203,1)","width":5.85172093122065},"line":{"color":"rgba(146,159,203,1)","width":5.85172093122065},"xaxis":"x","yaxis":"y","frame":null},{"x":[2],"y":[1],"mode":"markers","marker":{"color":"rgba(161,157,201,1)","size":[5.01700844370073],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(161,157,201,1)"}},"hoverinfo":"text","text":"EnergySwap:<br> market number: 2<br> exchange number: 1","type":"scatter","name":"ENS","textfont":{"color":"rgba(161,157,201,1)","size":5.01700844370073},"error_y":{"color":"rgba(161,157,201,1)","width":5.01700844370073},"error_x":{"color":"rgba(161,157,201,1)","width":5.01700844370073},"line":{"color":"rgba(161,157,201,1)","width":5.01700844370073},"xaxis":"x","yaxis":"y","frame":null},{"x":[201],"y":[73],"mode":"markers","marker":{"color":"rgba(175,154,200,1)","size":[5.8797874242061],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(175,154,200,1)"}},"hoverinfo":"text","text":"EOS:<br> market number: 201<br> exchange number: 73","type":"scatter","name":"EOS","textfont":{"color":"rgba(175,154,200,1)","size":5.8797874242061},"error_y":{"color":"rgba(175,154,200,1)","width":5.8797874242061},"error_x":{"color":"rgba(175,154,200,1)","width":5.8797874242061},"line":{"color":"rgba(175,154,200,1)","width":5.8797874242061},"xaxis":"x","yaxis":"y","frame":null},{"x":[166],"y":[73],"mode":"markers","marker":{"color":"rgba(188,151,199,1)","size":[6.58089083975511],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(188,151,199,1)"}},"hoverinfo":"text","text":"Ethereum Classic:<br> market number: 166<br> exchange number: 73","type":"scatter","name":"ETC","textfont":{"color":"rgba(188,151,199,1)","size":6.58089083975511},"error_y":{"color":"rgba(188,151,199,1)","width":6.58089083975511},"error_x":{"color":"rgba(188,151,199,1)","width":6.58089083975511},"line":{"color":"rgba(188,151,199,1)","width":6.58089083975511},"xaxis":"x","yaxis":"y","frame":null},{"x":[2854],"y":[133],"mode":"markers","marker":{"color":"rgba(201,148,198,1)","size":[57.0997600333649],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(201,148,198,1)"}},"hoverinfo":"text","text":"Ethereum:<br> market number: 2854<br> exchange number: 133","type":"scatter","name":"ETH","textfont":{"color":"rgba(201,148,198,1)","size":57.0997600333649},"error_y":{"color":"rgba(201,148,198,1)","width":57.0997600333649},"error_x":{"color":"rgba(201,148,198,1)","width":57.0997600333649},"line":{"color":"rgba(201,148,198,1)","width":57.0997600333649},"xaxis":"x","yaxis":"y","frame":null},{"x":[110],"y":[56],"mode":"markers","marker":{"color":"rgba(213,144,197,1)","size":[6.1024828463004],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(213,144,197,1)"}},"hoverinfo":"text","text":"Filecoin:<br> market number: 110<br> exchange number: 56","type":"scatter","name":"FIL","textfont":{"color":"rgba(213,144,197,1)","size":6.1024828463004},"error_y":{"color":"rgba(213,144,197,1)","width":6.1024828463004},"error_x":{"color":"rgba(213,144,197,1)","width":6.1024828463004},"line":{"color":"rgba(213,144,197,1)","width":6.1024828463004},"xaxis":"x","yaxis":"y","frame":null},{"x":[12],"y":[8],"mode":"markers","marker":{"color":"rgba(224,140,196,1)","size":[5],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(224,140,196,1)"}},"hoverinfo":"text","text":"Frax:<br> market number: 12<br> exchange number: 8","type":"scatter","name":"FRAX","textfont":{"color":"rgba(224,140,196,1)","size":5},"error_y":{"color":"rgba(224,140,196,1)","width":5},"error_x":{"color":"rgba(224,140,196,1)","width":5},"line":{"color":"rgba(224,140,196,1)","width":5},"xaxis":"x","yaxis":"y","frame":null},{"x":[52],"y":[38],"mode":"markers","marker":{"color":"rgba(228,144,189,1)","size":[5.1334941647939],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(228,144,189,1)"}},"hoverinfo":"text","text":"Frax Share:<br> market number: 52<br> exchange number: 38","type":"scatter","name":"FXS","textfont":{"color":"rgba(228,144,189,1)","size":5.1334941647939},"error_y":{"color":"rgba(228,144,189,1)","width":5.1334941647939},"error_x":{"color":"rgba(228,144,189,1)","width":5.1334941647939},"line":{"color":"rgba(228,144,189,1)","width":5.1334941647939},"xaxis":"x","yaxis":"y","frame":null},{"x":[71],"y":[40],"mode":"markers","marker":{"color":"rgba(222,157,174,1)","size":[5.18003151726583],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(222,157,174,1)"}},"hoverinfo":"text","text":"Hedera:<br> market number: 71<br> exchange number: 40","type":"scatter","name":"HBAR","textfont":{"color":"rgba(222,157,174,1)","size":5.18003151726583},"error_y":{"color":"rgba(222,157,174,1)","width":5.18003151726583},"error_x":{"color":"rgba(222,157,174,1)","width":5.18003151726583},"line":{"color":"rgba(222,157,174,1)","width":5.18003151726583},"xaxis":"x","yaxis":"y","frame":null},{"x":[41],"y":[23],"mode":"markers","marker":{"color":"rgba(214,169,159,1)","size":[5.04140510211297],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(214,169,159,1)"}},"hoverinfo":"text","text":"Huobi Token:<br> market number: 41<br> exchange number: 23","type":"scatter","name":"HT","textfont":{"color":"rgba(214,169,159,1)","size":5.04140510211297},"error_y":{"color":"rgba(214,169,159,1)","width":5.04140510211297},"error_x":{"color":"rgba(214,169,159,1)","width":5.04140510211297},"line":{"color":"rgba(214,169,159,1)","width":5.04140510211297},"xaxis":"x","yaxis":"y","frame":null},{"x":[86],"y":[40],"mode":"markers","marker":{"color":"rgba(205,180,144,1)","size":[5.1416520244673],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(205,180,144,1)"}},"hoverinfo":"text","text":"Internet Computer (DFINITY):<br> market number: 86<br> exchange number: 40","type":"scatter","name":"ICP","textfont":{"color":"rgba(205,180,144,1)","size":5.1416520244673},"error_y":{"color":"rgba(205,180,144,1)","width":5.1416520244673},"error_x":{"color":"rgba(205,180,144,1)","width":5.1416520244673},"line":{"color":"rgba(205,180,144,1)","width":5.1416520244673},"xaxis":"x","yaxis":"y","frame":null},{"x":[78],"y":[57],"mode":"markers","marker":{"color":"rgba(196,191,128,1)","size":[5.22886690484805],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(196,191,128,1)"}},"hoverinfo":"text","text":"Immutable X:<br> market number: 78<br> exchange number: 57","type":"scatter","name":"IMX","textfont":{"color":"rgba(196,191,128,1)","size":5.22886690484805},"error_y":{"color":"rgba(196,191,128,1)","width":5.22886690484805},"error_x":{"color":"rgba(196,191,128,1)","width":5.22886690484805},"line":{"color":"rgba(196,191,128,1)","width":5.22886690484805},"xaxis":"x","yaxis":"y","frame":null},{"x":[91],"y":[56],"mode":"markers","marker":{"color":"rgba(185,202,111,1)","size":[5.4219187097821],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(185,202,111,1)"}},"hoverinfo":"text","text":"Lido DAO Token:<br> market number: 91<br> exchange number: 56","type":"scatter","name":"LDO","textfont":{"color":"rgba(185,202,111,1)","size":5.4219187097821},"error_y":{"color":"rgba(185,202,111,1)","width":5.4219187097821},"error_x":{"color":"rgba(185,202,111,1)","width":5.4219187097821},"line":{"color":"rgba(185,202,111,1)","width":5.4219187097821},"xaxis":"x","yaxis":"y","frame":null},{"x":[250],"y":[101],"mode":"markers","marker":{"color":"rgba(172,212,93,1)","size":[6.23317860349231],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(172,212,93,1)"}},"hoverinfo":"text","text":"Chainlink:<br> market number: 250<br> exchange number: 101","type":"scatter","name":"LINK","textfont":{"color":"rgba(172,212,93,1)","size":6.23317860349231},"error_y":{"color":"rgba(172,212,93,1)","width":6.23317860349231},"error_x":{"color":"rgba(172,212,93,1)","width":6.23317860349231},"line":{"color":"rgba(172,212,93,1)","width":6.23317860349231},"xaxis":"x","yaxis":"y","frame":null},{"x":[364],"y":[109],"mode":"markers","marker":{"color":"rgba(174,216,81,1)","size":[7.50879381716083],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(174,216,81,1)"}},"hoverinfo":"text","text":"Litecoin:<br> market number: 364<br> exchange number: 109","type":"scatter","name":"LTC","textfont":{"color":"rgba(174,216,81,1)","size":7.50879381716083},"error_y":{"color":"rgba(174,216,81,1)","width":7.50879381716083},"error_x":{"color":"rgba(174,216,81,1)","width":7.50879381716083},"line":{"color":"rgba(174,216,81,1)","width":7.50879381716083},"xaxis":"x","yaxis":"y","frame":null},{"x":[158],"y":[77],"mode":"markers","marker":{"color":"rgba(188,217,77,1)","size":[5.47310185785907],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(188,217,77,1)"}},"hoverinfo":"text","text":"Decentraland:<br> market number: 158<br> exchange number: 77","type":"scatter","name":"MANA","textfont":{"color":"rgba(188,217,77,1)","size":5.47310185785907},"error_y":{"color":"rgba(188,217,77,1)","width":5.47310185785907},"error_x":{"color":"rgba(188,217,77,1)","width":5.47310185785907},"line":{"color":"rgba(188,217,77,1)","width":5.47310185785907},"xaxis":"x","yaxis":"y","frame":null},{"x":[215],"y":[91],"mode":"markers","marker":{"color":"rgba(202,217,72,1)","size":[6.63706891702785],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(202,217,72,1)"}},"hoverinfo":"text","text":"Polygon:<br> market number: 215<br> exchange number: 91","type":"scatter","name":"MATIC","textfont":{"color":"rgba(202,217,72,1)","size":6.63706891702785},"error_y":{"color":"rgba(202,217,72,1)","width":6.63706891702785},"error_x":{"color":"rgba(202,217,72,1)","width":6.63706891702785},"line":{"color":"rgba(202,217,72,1)","width":6.63706891702785},"xaxis":"x","yaxis":"y","frame":null},{"x":[110],"y":[53],"mode":"markers","marker":{"color":"rgba(215,217,67,1)","size":[5.43024283620875],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(215,217,67,1)"}},"hoverinfo":"text","text":"NEAR Protocol:<br> market number: 110<br> exchange number: 53","type":"scatter","name":"NEAR","textfont":{"color":"rgba(215,217,67,1)","size":5.43024283620875},"error_y":{"color":"rgba(215,217,67,1)","width":5.43024283620875},"error_x":{"color":"rgba(215,217,67,1)","width":5.43024283620875},"line":{"color":"rgba(215,217,67,1)","width":5.43024283620875},"xaxis":"x","yaxis":"y","frame":null},{"x":[23],"y":[15],"mode":"markers","marker":{"color":"rgba(227,217,62,1)","size":[5.22184887717776],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(227,217,62,1)"}},"hoverinfo":"text","text":"OKB:<br> market number: 23<br> exchange number: 15","type":"scatter","name":"OKB","textfont":{"color":"rgba(227,217,62,1)","size":5.22184887717776},"error_y":{"color":"rgba(227,217,62,1)","width":5.22184887717776},"error_x":{"color":"rgba(227,217,62,1)","width":5.22184887717776},"line":{"color":"rgba(227,217,62,1)","width":5.22184887717776},"xaxis":"x","yaxis":"y","frame":null},{"x":[42],"y":[23],"mode":"markers","marker":{"color":"rgba(240,217,56,1)","size":[5.39513425446672],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(240,217,56,1)"}},"hoverinfo":"text","text":"The Sandbox:<br> market number: 42<br> exchange number: 23","type":"scatter","name":"SAND","textfont":{"color":"rgba(240,217,56,1)","size":5.39513425446672},"error_y":{"color":"rgba(240,217,56,1)","width":5.39513425446672},"error_x":{"color":"rgba(240,217,56,1)","width":5.39513425446672},"line":{"color":"rgba(240,217,56,1)","width":5.39513425446672},"xaxis":"x","yaxis":"y","frame":null},{"x":[152],"y":[78],"mode":"markers","marker":{"color":"rgba(252,217,49,1)","size":[5.82643531119148],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(252,217,49,1)"}},"hoverinfo":"text","text":"Shiba Inu:<br> market number: 152<br> exchange number: 78","type":"scatter","name":"SHIB","textfont":{"color":"rgba(252,217,49,1)","size":5.82643531119148},"error_y":{"color":"rgba(252,217,49,1)","width":5.82643531119148},"error_x":{"color":"rgba(252,217,49,1)","width":5.82643531119148},"line":{"color":"rgba(252,217,49,1)","width":5.82643531119148},"xaxis":"x","yaxis":"y","frame":null},{"x":[223],"y":[86],"mode":"markers","marker":{"color":"rgba(253,215,63,1)","size":[7.20426729633628],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(253,215,63,1)"}},"hoverinfo":"text","text":"Solana:<br> market number: 223<br> exchange number: 86","type":"scatter","name":"SOL","textfont":{"color":"rgba(253,215,63,1)","size":7.20426729633628},"error_y":{"color":"rgba(253,215,63,1)","width":7.20426729633628},"error_x":{"color":"rgba(253,215,63,1)","width":7.20426729633628},"line":{"color":"rgba(253,215,63,1)","width":7.20426729633628},"xaxis":"x","yaxis":"y","frame":null},{"x":[30],"y":[23],"mode":"markers","marker":{"color":"rgba(250,212,80,1)","size":[5.07332577838287],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(250,212,80,1)"}},"hoverinfo":"text","text":"Toncoin:<br> market number: 30<br> exchange number: 23","type":"scatter","name":"TON","textfont":{"color":"rgba(250,212,80,1)","size":5.07332577838287},"error_y":{"color":"rgba(250,212,80,1)","width":5.07332577838287},"error_x":{"color":"rgba(250,212,80,1)","width":5.07332577838287},"line":{"color":"rgba(250,212,80,1)","width":5.07332577838287},"xaxis":"x","yaxis":"y","frame":null},{"x":[258],"y":[81],"mode":"markers","marker":{"color":"rgba(246,209,95,1)","size":[5.81612605478774],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(246,209,95,1)"}},"hoverinfo":"text","text":"TRON:<br> market number: 258<br> exchange number: 81","type":"scatter","name":"TRX","textfont":{"color":"rgba(246,209,95,1)","size":5.81612605478774},"error_y":{"color":"rgba(246,209,95,1)","width":5.81612605478774},"error_x":{"color":"rgba(246,209,95,1)","width":5.81612605478774},"line":{"color":"rgba(246,209,95,1)","width":5.81612605478774},"xaxis":"x","yaxis":"y","frame":null},{"x":[46],"y":[30],"mode":"markers","marker":{"color":"rgba(243,205,109,1)","size":[5.07750583965017],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(243,205,109,1)"}},"hoverinfo":"text","text":"Trust Wallet Token:<br> market number: 46<br> exchange number: 30","type":"scatter","name":"TWT","textfont":{"color":"rgba(243,205,109,1)","size":5.07750583965017},"error_y":{"color":"rgba(243,205,109,1)","width":5.07750583965017},"error_x":{"color":"rgba(243,205,109,1)","width":5.07750583965017},"line":{"color":"rgba(243,205,109,1)","width":5.07750583965017},"xaxis":"x","yaxis":"y","frame":null},{"x":[178],"y":[89],"mode":"markers","marker":{"color":"rgba(239,202,122,1)","size":[5.38336258485891],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(239,202,122,1)"}},"hoverinfo":"text","text":"Uniswap:<br> market number: 178<br> exchange number: 89","type":"scatter","name":"UNI","textfont":{"color":"rgba(239,202,122,1)","size":5.38336258485891},"error_y":{"color":"rgba(239,202,122,1)","width":5.38336258485891},"error_x":{"color":"rgba(239,202,122,1)","width":5.38336258485891},"line":{"color":"rgba(239,202,122,1)","width":5.38336258485891},"xaxis":"x","yaxis":"y","frame":null},{"x":[1448],"y":[99],"mode":"markers","marker":{"color":"rgba(234,199,134,1)","size":[15.1423282752384],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(234,199,134,1)"}},"hoverinfo":"text","text":"USDC:<br> market number: 1448<br> exchange number: 99","type":"scatter","name":"USDC","textfont":{"color":"rgba(234,199,134,1)","size":15.1423282752384},"error_y":{"color":"rgba(234,199,134,1)","width":15.1423282752384},"error_x":{"color":"rgba(234,199,134,1)","width":15.1423282752384},"line":{"color":"rgba(234,199,134,1)","width":15.1423282752384},"xaxis":"x","yaxis":"y","frame":null},{"x":[112],"y":[41],"mode":"markers","marker":{"color":"rgba(230,196,146,1)","size":[5.20882068962499],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(230,196,146,1)"}},"hoverinfo":"text","text":"VeChain:<br> market number: 112<br> exchange number: 41","type":"scatter","name":"VET","textfont":{"color":"rgba(230,196,146,1)","size":5.20882068962499},"error_y":{"color":"rgba(230,196,146,1)","width":5.20882068962499},"error_x":{"color":"rgba(230,196,146,1)","width":5.20882068962499},"line":{"color":"rgba(230,196,146,1)","width":5.20882068962499},"xaxis":"x","yaxis":"y","frame":null},{"x":[124],"y":[44],"mode":"markers","marker":{"color":"rgba(223,194,152,1)","size":[5.24399496174691],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(223,194,152,1)"}},"hoverinfo":"text","text":"Wrapped BTC:<br> market number: 124<br> exchange number: 44","type":"scatter","name":"WBTC","textfont":{"color":"rgba(223,194,152,1)","size":5.24399496174691},"error_y":{"color":"rgba(223,194,152,1)","width":5.24399496174691},"error_x":{"color":"rgba(223,194,152,1)","width":5.24399496174691},"line":{"color":"rgba(223,194,152,1)","width":5.24399496174691},"xaxis":"x","yaxis":"y","frame":null},{"x":[17],"y":[15],"mode":"markers","marker":{"color":"rgba(216,191,157,1)","size":[5.01930376806633],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(216,191,157,1)"}},"hoverinfo":"text","text":"WEMIX TOKEN:<br> market number: 17<br> exchange number: 15","type":"scatter","name":"WEMIX","textfont":{"color":"rgba(216,191,157,1)","size":5.01930376806633},"error_y":{"color":"rgba(216,191,157,1)","width":5.01930376806633},"error_x":{"color":"rgba(216,191,157,1)","width":5.01930376806633},"line":{"color":"rgba(216,191,157,1)","width":5.01930376806633},"xaxis":"x","yaxis":"y","frame":null},{"x":[1373],"y":[11],"mode":"markers","marker":{"color":"rgba(209,189,161,1)","size":[5.66805007655032],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(209,189,161,1)"}},"hoverinfo":"text","text":"Wrapped Ether:<br> market number: 1373<br> exchange number: 11","type":"scatter","name":"WETH","textfont":{"color":"rgba(209,189,161,1)","size":5.66805007655032},"error_y":{"color":"rgba(209,189,161,1)","width":5.66805007655032},"error_x":{"color":"rgba(209,189,161,1)","width":5.66805007655032},"line":{"color":"rgba(209,189,161,1)","width":5.66805007655032},"xaxis":"x","yaxis":"y","frame":null},{"x":[17],"y":[3],"mode":"markers","marker":{"color":"rgba(202,186,166,1)","size":[5.05847577676703],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(202,186,166,1)"}},"hoverinfo":"text","text":"Wrapped liquid staked Ether 2.0:<br> market number: 17<br> exchange number: 3","type":"scatter","name":"WSTETH","textfont":{"color":"rgba(202,186,166,1)","size":5.05847577676703},"error_y":{"color":"rgba(202,186,166,1)","width":5.05847577676703},"error_x":{"color":"rgba(202,186,166,1)","width":5.05847577676703},"line":{"color":"rgba(202,186,166,1)","width":5.05847577676703},"xaxis":"x","yaxis":"y","frame":null},{"x":[196],"y":[84],"mode":"markers","marker":{"color":"rgba(195,184,170,1)","size":[5.33060972455765],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(195,184,170,1)"}},"hoverinfo":"text","text":"Stellar:<br> market number: 196<br> exchange number: 84","type":"scatter","name":"XLM","textfont":{"color":"rgba(195,184,170,1)","size":5.33060972455765},"error_y":{"color":"rgba(195,184,170,1)","width":5.33060972455765},"error_x":{"color":"rgba(195,184,170,1)","width":5.33060972455765},"line":{"color":"rgba(195,184,170,1)","width":5.33060972455765},"xaxis":"x","yaxis":"y","frame":null},{"x":[81],"y":[39],"mode":"markers","marker":{"color":"rgba(187,181,175,1)","size":[5.26381708357811],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(187,181,175,1)"}},"hoverinfo":"text","text":"Monero:<br> market number: 81<br> exchange number: 39","type":"scatter","name":"XMR","textfont":{"color":"rgba(187,181,175,1)","size":5.26381708357811},"error_y":{"color":"rgba(187,181,175,1)","width":5.26381708357811},"error_x":{"color":"rgba(187,181,175,1)","width":5.26381708357811},"line":{"color":"rgba(187,181,175,1)","width":5.26381708357811},"xaxis":"x","yaxis":"y","frame":null},{"x":[396],"y":[100],"mode":"markers","marker":{"color":"rgba(179,179,179,1)","size":[9.34761570432054],"sizemode":"diameter","opacity":0.5,"line":{"color":"rgba(179,179,179,1)"}},"hoverinfo":"text","text":"XRP:<br> market number: 396<br> exchange number: 100","type":"scatter","name":"XRP","textfont":{"color":"rgba(179,179,179,1)","size":9.34761570432054},"error_y":{"color":"rgba(179,179,179,1)","width":9.34761570432054},"error_x":{"color":"rgba(179,179,179,1)","width":9.34761570432054},"line":{"color":"rgba(179,179,179,1)","width":9.34761570432054},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

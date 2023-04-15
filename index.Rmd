@@ -1,0 +1,14 @@
+---
+title: "JSC370 A5 Interactive visualization"
+author: "Jin Shang"
+output: 
+    html_document
+---
+
+This is my JSC370 A5 website.
+
+# Introduction
+
+Cryptocurrency is a digital or virtual currency that uses cryptography for security and operates independently of a central bank. Cryptocurrencies are decentralized, meaning that they are not controlled by a single authority or institution, but instead operate on a distributed ledger system called blockchain.
+
+This website will show you four interactive visualization plots across two page, plots shows relationship between number of market and number of exchanges for different cryptocurrency, and history price trend for some representative cryptocurrency, respectively.

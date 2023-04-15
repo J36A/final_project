@@ -1,0 +1,15 @@
+name: "my-website"
+output_dir: "."
+navbar:
+  title: "JSC370 A5"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Relationship between number of market and number of exchange"
+      href: page2.html
+    - text: "Historical prices of some representative cryptocurrency"
+      href: page3.html
+output:
+  html_document:
+    theme: cosmo
+    css: styles.css
